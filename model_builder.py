@@ -436,18 +436,18 @@ if __name__ == "__main__":
 
     # need to first download the question text for new questions and put them into the "master" question file
 
-    # if len(sys.argv) > 1:
-    #     username = sys.argv[1]
-    #     user_question_file = download_question_history(username)
-    #     X, y = pull_user_questions(user_question_file)
-    #     user_model = build_and_evaluate_user_model(X, y)
+    if len(sys.argv) > 1:
+        username = sys.argv[1]
+        user_question_file = download_question_history(username)
+        X, y = pull_user_questions(user_question_file)
+        user_model = build_and_evaluate_user_model(X, y)
 
-    # else:
+    else:
 
-    #     for username in get_user_list():
+        for username in get_user_list():
 
-    #         user_question_file = download_question_history(username)
+            user_question_file = download_question_history(username)
 
-    #         X, y = pull_user_questions(user_question_file)
+            X, y = pull_user_questions(user_question_file)
 
-    #         user_model = build_and_evaluate_user_model(X, y)
+            user_model = build_and_evaluate_user_model(X, y)
