@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Learned League Defender</title>
+    <script type="text/javascript" src="static/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="static/jquery-ui.js"></script>
+    <style media="screen">
+
+            html {
+                height: 100%;
+            }
+            
+            body {
+                overflow: hidden;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            img.background {
+                width: 100%;
+                height: 100%;
+                position: fixed;
+            }      
+    </style>
+    <style>
+        label {
+            display: inline-block;
+            width: 5em;
+        }       
+    </style>    
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <link rel="stylesheet" type="text/css" href="static/jquery-ui.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+</head>
+<body>   
+    <div style="z-index:2; position:absolute; overflow:auto; top:0px; left:0px; right:0px; bottom:0px;">
+        <center>
+            <form name="question_form" method="post" action="score">
+                <table style="width: 620px;" cellspacing="0">
+                    <thead>
+                        <tr class="odd">
+                            <th scope="col" nowrap>Learned League Defender</th>
+                            <th>User: <select id="username" name="username">
+								<option value="aginm">aginm</option>
+                                <option value="allardm">allardm</option>
+                                <option value="castled">castled</option>
+                                <option value="celebrezzer">celebrezzer</option>
+                                <option value="chupacks">chupacks</option>
+                                <option value="clancyc2">clancyc2</option>
+                                <option value="davisj84">davisj84</option>
+                                <option value="delfsb">delfsb</option>
+                                <option value="drummondk">drummondk</option>
+                                <option value="farrarn">farrarn</option>
+                                <option value="gutmannj">gutmannj</option>
+                                <option value="kohlerk">kohlerk</option>
+                                <option value="liangs">liangs</option>
+                                <option value="liscovitzm">liscovitzm</option>
+                                <option value="lizzia">lizzia</option>
+                                <option value="luhh">luhh</option>
+                                <option value="makd">makd</option>
+                                <option value="murphym3">murphym3</option>
+                                <option value="myersm">myersm</option>
+                                <option value="oneilp">oneilp</option>
+                                <option value="pattonr">pattonr</option>
+                                <option value="purtlej">purtlej</option>
+                                <option value="riders">riders</option>
+                                <option value="rileya">rileya</option>
+                                <option value="rileyd">rileyd</option>
+                                <option value="rosenbergm">rosenbergm</option>
+                                <option value="schiminskid">schiminskid</option>
+                                <option value="walkerc">walkerc</option>
+                                <option value="weingers">weingers</option>
+                                <option value="zelenetzj">zelenetzj</option>                                                  	
+                            </select></th>
+                            <th>{% if auc %}Model Accuracy: {{ auc }}{% endif %}</th>
+                            <th>Points</th>
+                            <th>Ranks</th>
+                        </tr>                        
+                    </thead>
+                    <tr class="even"><td>Q1</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q1" name="q1">{{ q1 }}</textarea></td><td>{{ q1_pts }}</td><td>{% if ranks %} {{ ranks[0] }} {% endif %}</td></tr>
+                    <tr class="even"><td>Q2</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q2" name="q2">{{ q2 }}</textarea></td><td>{{ q2_pts }}</td><td>{% if ranks %} {{ranks[1]}} {% endif %}</td></tr>
+                    <tr class="even"><td>Q3</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q3" name="q3">{{ q3 }}</textarea></td><td>{{ q3_pts }}</td><td>{% if ranks %} {{ranks[2]}} {% endif %}</td></tr>
+                    <tr class="even"><td>Q4</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q4" name="q4">{{ q4 }}</textarea></td><td>{{ q4_pts }}</td><td>{% if ranks %} {{ranks[3]}} {% endif %}</td></tr>
+                    <tr class="even"><td>Q5</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q5" name="q5">{{ q5 }}</textarea></td><td>{{ q5_pts }}</td><td>{% if ranks %} {{ranks[4]}} {% endif %}</td></tr>
+                    <tr class="even"><td>Q6</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q6" name="q6">{{ q6 }}</textarea></td><td>{{ q6_pts }}</td><td>{% if ranks %} {{ranks[5]}} {% endif %}</td></tr>                                                                                                                                     
+                    <tr class="even odd"><td colspan="3" style="text-align:center;"><input id="submit" name="submit" type="submit"></td></tr>
+                </table>
+            </form>
+        </center>
+    </div>
+<br/>
+<br/>
+</body>
+</html>
