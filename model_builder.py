@@ -46,34 +46,36 @@ BASEDIR = os.path.expanduser("~") + "/git/learnedleague-defender/"
 
 def get_user_list():
     return [
-'aginm',
 'allardm',
+'atefib',
+'browers',
+'cantwellc',
+'castleaw',
 'castled',
-'celebrezzer',
+'castlee',
 'chupacks',
 'clancyc2',
+'craigt',
 'davisj84',
 'delfsb',
-'drummondk',
 'farrarn',
-'gutmannj',
+'gibsonj',
+'greenswags',
+'heatond',
+'heatone',
+'hornbergerjcoyote',
 'kohlerk',
+'langsdorfk',
 'liangs',
-'liscovitzm',
-'lizzia',
-'luhh',
+'lonoffd',
 'makd',
-'murphym3',
+'morrisonm',
 'myersm',
-'oneilp',
+'oconnorj',
 'pattonr',
+'phillipss',
 'purtlej',
-'riders',
-'rileya',
-'rileyd',
-'rosenbergm',
 'schiminskid',
-'walkerc',
 'weingers',
 'zelenetzj'  
 ]
@@ -412,7 +414,20 @@ def build_and_evaluate_user_model(X, y):
 
 	print "Model written out to " + BASEDIR + "user_models/" + username + ".pickle"	
 
-	return user_model    
+	return user_model 
+
+def score_questions(username, q1, q2, q3, q4, q5, q6):
+
+    with open(BASEDIR + "categories.pickle", 'rb') as f:
+        category_model = pickle.load(f)
+
+    with open(BASEDIR + "user_models/" + username + ".pickle", 'rb') as f:
+        user_model = pickle.load(f)
+    
+    features = category_model.predict_proba([q1, q2, q3, q4, q5, q6])
+
+    return (user_model.predict_proba(features)[:,1], user_model.auc)    
+       
 
 if __name__ == "__main__":
 
@@ -423,14 +438,14 @@ if __name__ == "__main__":
     LL_PASSWORD = config.get("LearnedLeague","password")
 
     # build category model (assumes question_file is up-to-date)
-    question_file = BASEDIR + "question_details.csv"
-    X, y = pull_questions(question_file)
-    classifier = SGDClassifier(loss = "log")    
-    model = build_model(X, y, classifier)
-    with open(BASEDIR + "categories.pickle", 'wb') as f:
-        pickle.dump(model, f)   
-    print("Model written out to {}".format("categories.pickle"))
-    print(show_most_informative_features(model))    
+    # question_file = BASEDIR + "question_details.csv"
+    # X, y = pull_questions(question_file)
+    # classifier = SGDClassifier(loss = "log")    
+    # model = build_model(X, y, classifier)
+    # with open(BASEDIR + "categories.pickle", 'wb') as f:
+    #     pickle.dump(model, f)   
+    # print("Model written out to {}".format("categories.pickle"))
+    # print(show_most_informative_features(model))    
 
     # build user models
 

@@ -12,6 +12,7 @@ import csv
 import mechanize
 import cookielib
 import smtplib
+import ConfigParser
 
 from bs4 import BeautifulSoup
 
@@ -470,9 +471,9 @@ if __name__ == "__main__":
     csvfile = BASEDIR + "question_details.csv"
 
     # this is hardcoded to fill in match days 16 - 24 from LL73!
-    for matchday in range(18, 25):
+    for matchday in range(8, 9):
         # Step 1: download the questions from match day and add to master question file
-        questions = pull_matchday_questions(73, matchday)
+        questions = pull_matchday_questions(74, matchday)
         with open(csvfile, "a") as f:
             writer = csv.writer(f)
             # if add_newline:
@@ -487,4 +488,4 @@ if __name__ == "__main__":
     with open(BASEDIR + "categories.pickle", 'wb') as f:
         pickle.dump(model, f)   
     print("Model written out to {}".format("categories.pickle"))
-    print(show_most_informative_features(model))
+    # print(show_most_informative_features(model))
