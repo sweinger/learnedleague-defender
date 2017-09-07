@@ -15,7 +15,7 @@ from model_builder import *
 app = Flask(__name__)
 Bootstrap(app)
 
-PORT_NUMBER = 5000 
+PORT_NUMBER = 8081 
 
 @app.route('/', methods=['POST', 'GET'])
 def get_homepage():
