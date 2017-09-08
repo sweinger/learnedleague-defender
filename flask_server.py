@@ -38,13 +38,15 @@ def score():
 	scores, auc = score_questions(username, q1, q2, q3, q4, q5, q6)
 	seq = sorted(scores)
 	ranks = [seq.index(v) for v in scores]
-	print ranks
 	points = np.array([3, 2, 2, 1, 1, 0])
 	assigned_points = points[ranks]	
-	return render_template('index.html', q1=q1, q2=q2, q3=q3, q4=q4, q5=q5, q6=q6, 
-		q1_pts=assigned_points[0], q2_pts=assigned_points[1], q3_pts=assigned_points[2],
-		q4_pts=assigned_points[3], q5_pts=assigned_points[4], q6_pts=assigned_points[5],
-		ranks=ranks)
+	questions = [q1, q2, q3, q4, q5, q6]
+	return render_template('index.html', #q1=q1, q2=q2, q3=q3, q4=q4, q5=q5, q6=q6, 
+		#q1_pts=assigned_points[0], q2_pts=assigned_points[1], q3_pts=assigned_points[2],
+		#q4_pts=assigned_points[3], q5_pts=assigned_points[4], q6_pts=assigned_points[5],
+		username=username, questions=questions, 
+		assigned_points=assigned_points, ranks=ranks,
+		scores=scores, auc=auc)
 
 if __name__ == '__main__':
 	app.debug = True

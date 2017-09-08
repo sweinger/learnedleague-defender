@@ -471,7 +471,7 @@ if __name__ == "__main__":
     csvfile = BASEDIR + "question_details.csv"
 
     # this is hardcoded to fill in match days 16 - 24 from LL73!
-    for matchday in range(8, 9):
+    for matchday in range(9, 10):
         # Step 1: download the questions from match day and add to master question file
         questions = pull_matchday_questions(74, matchday)
         with open(csvfile, "a") as f:

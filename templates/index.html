@@ -5,6 +5,11 @@
     <title>Learned League Defender</title>
     <script type="text/javascript" src="static/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="static/jquery-ui.js"></script>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+            $( "#username" ).val('{% if username is defined %}{{ username }}{% endif %}');
+        })
+    </script>
     <style media="screen">
 
             html {
@@ -76,17 +81,18 @@
 <option value="weingers">weingers</option>
 <option value="zelenetzj">zelenetzj</option>                                                  	
                             </select></th>
-                            <th>{% if auc %}Model Accuracy: {{ auc }}{% endif %}</th>
+                            <th>{% if auc %}Model AUC: {{ "%0.2f" % auc }}{% endif %}</th>
                             <th>Points</th>
                             <th>Ranks</th>
+                            <th>Est. Prob.</th>
                         </tr>                        
                     </thead>
-                    <tr class="even"><td>Q1</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q1" name="q1">{{ q1 }}</textarea></td><td>{{ q1_pts }}</td><td>{% if ranks %} {{ ranks[0] }} {% endif %}</td></tr>
-                    <tr class="even"><td>Q2</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q2" name="q2">{{ q2 }}</textarea></td><td>{{ q2_pts }}</td><td>{% if ranks %} {{ranks[1]}} {% endif %}</td></tr>
-                    <tr class="even"><td>Q3</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q3" name="q3">{{ q3 }}</textarea></td><td>{{ q3_pts }}</td><td>{% if ranks %} {{ranks[2]}} {% endif %}</td></tr>
-                    <tr class="even"><td>Q4</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q4" name="q4">{{ q4 }}</textarea></td><td>{{ q4_pts }}</td><td>{% if ranks %} {{ranks[3]}} {% endif %}</td></tr>
-                    <tr class="even"><td>Q5</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q5" name="q5">{{ q5 }}</textarea></td><td>{{ q5_pts }}</td><td>{% if ranks %} {{ranks[4]}} {% endif %}</td></tr>
-                    <tr class="even"><td>Q6</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q6" name="q6">{{ q6 }}</textarea></td><td>{{ q6_pts }}</td><td>{% if ranks %} {{ranks[5]}} {% endif %}</td></tr>                                                                                                                                     
+                    <tr class="even"><td>Q1</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q1" name="q1">{% if questions is defined %}{{ questions[0] }}{% endif %}</textarea></td><td>{% if assigned_points is defined %}{{ assigned_points[0] }}{% endif %}</td><td>{% if ranks is defined %} {{ ranks[0] }} {% endif %}</td><td>{% if scores is defined %}{{"%0.2f" % scores[0]}}{% endif %}</td></tr>
+                    <tr class="even"><td>Q2</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q2" name="q2">{% if questions is defined %}{{ questions[1] }}{% endif %}</textarea></td><td>{% if assigned_points is defined %}{{ assigned_points[1] }}{% endif %}</td><td>{% if ranks is defined %} {{ranks[1]}} {% endif %}</td><td>{% if scores is defined %}{{"%0.2f" % scores[1]}}{% endif %}</td></tr>
+                    <tr class="even"><td>Q3</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q3" name="q3">{% if questions is defined %}{{ questions[2] }}{% endif %}</textarea></td><td>{% if assigned_points is defined %}{{ assigned_points[2] }}{% endif %}</td><td>{% if ranks is defined %} {{ranks[2]}} {% endif %}</td><td>{% if scores is defined %}{{"%0.2f" % scores[2]}}{% endif %}</td></tr>
+                    <tr class="even"><td>Q4</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q4" name="q4">{% if questions is defined %}{{ questions[3] }}{% endif %}</textarea></td><td>{% if assigned_points is defined %}{{ assigned_points[3] }}{% endif %}</td><td>{% if ranks is defined %} {{ranks[3]}} {% endif %}</td><td>{% if scores is defined %}{{"%0.2f" % scores[3]}}{% endif %}</td></tr>
+                    <tr class="even"><td>Q5</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q5" name="q5">{% if questions is defined %}{{ questions[4] }}{% endif %}</textarea></td><td>{% if assigned_points is defined %}{{ assigned_points[4] }}{% endif %}</td><td>{% if ranks is defined %} {{ranks[4]}} {% endif %}</td><td>{% if scores is defined %}{{"%0.2f" % scores[4]}}{% endif %}</td></tr>
+                    <tr class="even"><td>Q6</td><td style="text-align:left;" colspan="2"><textarea rows="4" cols="100" id="q6" name="q6">{% if questions is defined %}{{ questions[5] }}{% endif %}</textarea></td><td>{% if assigned_points is defined %}{{ assigned_points[5] }}{% endif %}</td><td>{% if ranks is defined %} {{ranks[5]}} {% endif %}</td><td>{% if scores is defined %}{{"%0.2f" % scores[5]}}{% endif %}</td></tr>                                                                                                                                     
                     <tr class="even odd"><td colspan="3" style="text-align:center;"><input id="submit" name="submit" type="submit"></td></tr>
                 </table>
             </form>
