@@ -2,3 +2,4 @@ cron:
 - description: update models
   url: /update
   schedule: every day 06:00 
+  timezone: America/New_York
