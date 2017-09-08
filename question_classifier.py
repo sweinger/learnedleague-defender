@@ -460,6 +460,25 @@ def send_email(questions, assigned_points, ranks):
 
 if __name__ == "__main__":
 
+    matches = {
+        "09/08/2017": 10,
+        "09/11/2017": 11,
+        "09/12/2017": 12,
+        "09/13/2017": 13,
+        "09/14/2017": 14,
+        "09/15/2017": 15,
+        "09/18/2017": 16,
+        "09/19/2017": 17,
+        "09/20/2017": 18,
+        "09/21/2017": 19,
+        "09/22/2017": 20,
+        "09/25/2017": 21,
+        "09/26/2017": 22,
+        "09/27/2017": 23,
+        "09/28/2017": 24,
+        "09/29/2017": 25,
+    }    
+
     # read username and password for the learned league site
     config = ConfigParser.ConfigParser()
     config.read("settings.ini")
@@ -470,17 +489,15 @@ if __name__ == "__main__":
 
     csvfile = BASEDIR + "question_details.csv"
 
-    # this is hardcoded to fill in match days 16 - 24 from LL73!
-    for matchday in range(9, 10):
-        # Step 1: download the questions from match day and add to master question file
+    date = time.strftime("%m/%d/%Y")
+    if date in matches:
+        matchday = matches[date]
         questions = pull_matchday_questions(74, matchday)
         with open(csvfile, "a") as f:
             writer = csv.writer(f)
-            # if add_newline:
-            # writer.writerow("\n")
             for i in range(0, len(questions)):
-                writer.writerow([questions[i][0].strip(), questions[i][1].strip(), questions[i][2].strip(), questions[i][3].encode("utf-8").strip(), questions[i][4].strip()])                  
-    
+                writer.writerow([questions[i][0].strip(), questions[i][1].strip(), questions[i][2].strip(), questions[i][3].encode("utf-8").strip(), questions[i][4].strip()])                          
+
     # Step 2: build category model
     X, y = pull_questions(csvfile)
     classifier = SGDClassifier(loss = "log")
