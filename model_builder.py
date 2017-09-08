@@ -517,6 +517,9 @@ def send_email(questions, assigned_points, ranks):
     server.quit()  
 
 def build_models():
+
+    matches = get_matches()
+
     # read username and password for the learned league site
     config = ConfigParser.ConfigParser()
     config.read("settings.ini")
