@@ -42,43 +42,65 @@ from sklearn.model_selection import KFold
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+import webapp2
+
 BASEDIR = os.path.expanduser("~") + "/git/learnedleague-defender/"
 
 def get_user_list():
     return [
-'allardm',
-'atefib',
-'browers',
-'cantwellc',
-'castleaw',
-'castled',
-'castlee',
-'chupacks',
-'clancyc2',
-'craigt',
-'davisj84',
-'delfsb',
-'farrarn',
-'gibsonj',
-'greenswags',
-'heatond',
-'heatone',
-'hornbergerjcoyote',
-'kohlerk',
-'langsdorfk',
-'liangs',
-'lonoffd',
-'makd',
-'morrisonm',
-'myersm',
-'oconnorj',
-'pattonr',
-'phillipss',
-'purtlej',
-'schiminskid',
-'weingers',
-'zelenetzj'  
+        'allardm',
+        'atefib',
+        'browers',
+        'cantwellc',
+        'castleaw',
+        'castled',
+        'castlee',
+        'chupacks',
+        'clancyc2',
+        'craigt',
+        'davisj84',
+        'delfsb',
+        'farrarn',
+        'gibsonj',
+        'greenswags',
+        'heatond',
+        'heatone',
+        'hornbergerjcoyote',
+        'kohlerk',
+        'langsdorfk',
+        'liangs',
+        'lonoffd',
+        'makd',
+        'morrisonm',
+        'myersm',
+        'oconnorj',
+        'pattonr',
+        'phillipss',
+        'purtlej',
+        'schiminskid',
+        'weingers',
+        'zelenetzj'  
 ]
+
+def get_matches():
+    return {
+        "09/08/2017": 10,
+        "09/11/2017": 11,
+        "09/12/2017": 12,
+        "09/13/2017": 13,
+        "09/14/2017": 14,
+        "09/15/2017": 15,
+        "09/18/2017": 16,
+        "09/19/2017": 17,
+        "09/20/2017": 18,
+        "09/21/2017": 19,
+        "09/22/2017": 20,
+        "09/25/2017": 21,
+        "09/26/2017": 22,
+        "09/27/2017": 23,
+        "09/28/2017": 24,
+        "09/29/2017": 25,
+    } 
 
 def pull_matchday_questions(season, day):
     br = mechanize.Browser()
@@ -492,29 +514,9 @@ def send_email(questions, assigned_points, ranks):
     msg.attach(part1)
     
     server.sendmail(GMAIL_USERNAME, GMAIL_USERNAME, msg.as_string())
-    server.quit()       
+    server.quit()  
 
-if __name__ == "__main__":
-
-    matches = {
-        "09/08/2017": 10,
-        "09/11/2017": 11,
-        "09/12/2017": 12,
-        "09/13/2017": 13,
-        "09/14/2017": 14,
-        "09/15/2017": 15,
-        "09/18/2017": 16,
-        "09/19/2017": 17,
-        "09/20/2017": 18,
-        "09/21/2017": 19,
-        "09/22/2017": 20,
-        "09/25/2017": 21,
-        "09/26/2017": 22,
-        "09/27/2017": 23,
-        "09/28/2017": 24,
-        "09/29/2017": 25,
-    }    
-
+def build_models():
     # read username and password for the learned league site
     config = ConfigParser.ConfigParser()
     config.read("settings.ini")
@@ -557,4 +559,20 @@ if __name__ == "__main__":
 
             X, y = pull_user_questions(user_question_file)
 
-            user_model = build_and_evaluate_user_model(X, y)    
+            user_model = build_and_evaluate_user_model(X, y)  
+
+class BuildModels(webapp2.RequestHandler):
+    def get(self):
+        
+        build_models()
+
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.write(json.dumps({"status": "200"}))        
+
+if __name__ == "__main__":
+
+    build_models()
+ 
+app = webapp2.WSGIApplication([
+    webapp2.Route(r'/update', handler=BuildModels)
+], debug=True)
