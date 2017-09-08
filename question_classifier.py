@@ -44,6 +44,42 @@ from email.mime.text import MIMEText
 
 BASEDIR = os.path.expanduser("~") + "/git/learnedleague-defender/"
 
+def get_user_list():
+    return [
+'allardm',
+'atefib',
+'browers',
+'cantwellc',
+'castleaw',
+'castled',
+'castlee',
+'chupacks',
+'clancyc2',
+'craigt',
+'davisj84',
+'delfsb',
+'farrarn',
+'gibsonj',
+'greenswags',
+'heatond',
+'heatone',
+'hornbergerjcoyote',
+'kohlerk',
+'langsdorfk',
+'liangs',
+'lonoffd',
+'makd',
+'morrisonm',
+'myersm',
+'oconnorj',
+'pattonr',
+'phillipss',
+'purtlej',
+'schiminskid',
+'weingers',
+'zelenetzj'  
+]
+
 def pull_matchday_questions(season, day):
     br = mechanize.Browser()
     cj = cookielib.LWPCookieJar()
@@ -506,3 +542,19 @@ if __name__ == "__main__":
         pickle.dump(model, f)   
     print("Model written out to {}".format("categories.pickle"))
     # print(show_most_informative_features(model))
+
+    if len(sys.argv) > 1:
+        username = sys.argv[1]
+        user_question_file = download_question_history(username)
+        X, y = pull_user_questions(user_question_file)
+        user_model = build_and_evaluate_user_model(X, y)
+
+    else:
+
+        for username in get_user_list():
+
+            user_question_file = download_question_history(username)
+
+            X, y = pull_user_questions(user_question_file)
+
+            user_model = build_and_evaluate_user_model(X, y)    

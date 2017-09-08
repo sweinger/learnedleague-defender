@@ -312,62 +312,62 @@ def show_most_informative_features(model, text=None, n=20):
 
 def download_question_history(username):
 
-	outfile = BASEDIR + "user_data/" + username + ".csv"
+    outfile = BASEDIR + "user_data/" + username + ".csv"
 
-	br = mechanize.Browser()
-	cj = cookielib.LWPCookieJar()
-	br.set_cookiejar(cj)
-	br.set_handle_equiv(True)
-	br.set_handle_gzip(True)
-	br.set_handle_redirect(True)
-	br.set_handle_referer(True)
-	br.set_handle_robots(False)
-	br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+    br = mechanize.Browser()
+    cj = cookielib.LWPCookieJar()
+    br.set_cookiejar(cj)
+    br.set_handle_equiv(True)
+    br.set_handle_gzip(True)
+    br.set_handle_redirect(True)
+    br.set_handle_referer(True)
+    br.set_handle_robots(False)
+    br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
 
-	br.addheaders = [('User-agent', 'Chrome')]
-	br.open('https://learnedleague.com/ucp.php?mode=login')
+    br.addheaders = [('User-agent', 'Chrome')]
+    br.open('https://learnedleague.com/ucp.php?mode=login')
 
 
-	br.select_form(nr=0)
-	br['username'] = LL_USERNAME
-	br['password'] = LL_PASSWORD
-	br.submit()    
+    br.select_form(nr=0)
+    br['username'] = LL_USERNAME
+    br['password'] = LL_PASSWORD
+    br.submit()    
 
-	url = 'https://learnedleague.com/profiles/qhist.php?' + username
+    url = 'https://learnedleague.com/profiles/qhist.php?' + username
 
-	print "Downloading question history from " + url
+    print "Downloading question history from " + url
 
-	r = br.open('https://learnedleague.com/profiles/qhist.php?' + username).read()
-	soup = BeautifulSoup(r)
+    r = br.open('https://learnedleague.com/profiles/qhist.php?' + username).read()
+    soup = BeautifulSoup(r)
 
-	tables = soup.find_all("table", class_="qh")
+    tables = soup.find_all("table", class_="qh")
 
-	seasons = []
-	matchdays = []
-	question_numbers = []
-	corrects = []
+    seasons = []
+    matchdays = []
+    question_numbers = []
+    corrects = []
 
-	i = 0
+    i = 0
 
-	for table in tables:
-	    for c in table.find_all("tr"):
-	        cells = c.find_all("td", class_=re.compile("r|g"))
-	        if len(cells) > 0:
-	            matchday_details = cells[0].text
-	            tokens = matchday_details.split(" ")
-	            seasons.append(tokens[0])
-	            matchdays.append(tokens[1])
-	            question_numbers.append(tokens[2])
-	            gif = cells[2].find("img")["src"]
-	            corrects.append(gif != "/images/misc/reddot.gif")
+    for table in tables:
+        for c in table.find_all("tr"):
+            cells = c.find_all("td", class_=re.compile("r|g"))
+            if len(cells) > 0:
+                matchday_details = cells[0].text
+                tokens = matchday_details.split(" ")
+                seasons.append(tokens[0])
+                matchdays.append(tokens[1])
+                question_numbers.append(tokens[2])
+                gif = cells[2].find("img")["src"]
+                corrects.append(gif != "/images/misc/reddot.gif")
 
-	with open(outfile, "w") as f:
-	    writer = csv.writer(f)
-	    writer.writerow(["season","matchday","question_number","correct"])
-	    for i in range(0, len(seasons)):
-	        writer.writerow([seasons[i], matchdays[i], question_numbers[i], corrects[i]])   	
+    with open(outfile, "w") as f:
+        writer = csv.writer(f)
+        writer.writerow(["season","matchday","question_number","correct"])
+        for i in range(0, len(seasons)):
+            writer.writerow([seasons[i], matchdays[i], question_numbers[i], corrects[i]])       
 
-	return outfile
+    return outfile
 
 def pull_user_questions(csvfile):
     qd = pandas.read_csv(BASEDIR + "question_details.csv", encoding = 'iso-8859-1')
@@ -382,39 +382,72 @@ def pull_user_questions(csvfile):
 @timeit
 def build_and_evaluate_user_model(X, y):
 
-	with open("categories.pickle", 'rb') as f:
-	    category_model = pickle.load(f)
+    with open("categories.pickle", 'rb') as f:
+        category_model = pickle.load(f)
 
-	kf = KFold(n_splits=5)
+    kf = KFold(n_splits=5)
 
-	aucs = []
+    aucs = []
 
-	for train, test in kf.split(X):
+    for train, test in kf.split(X):
 
-		X_train, X_test, y_train, y_test = X[train], X[test], y[train], y[test]
+        X_train, X_test, y_train, y_test = X[train], X[test], y[train], y[test]
 
-		features = category_model.predict_proba(X_train)
+        features = category_model.predict_proba(X_train)
 
-		user_model = LogisticRegression()
-		user_model.fit(features, y_train)	
-		
-		y_pred = user_model.predict_proba(category_model.predict_proba(X_test))[:,1]
-		fpr, tpr, _ = metrics.roc_curve(y_test, y_pred)
-		aucs.append(metrics.auc(fpr,tpr))
+        user_model = LogisticRegression()
+        user_model.fit(features, y_train)   
+        
+        y_pred = user_model.predict_proba(category_model.predict_proba(X_test))[:,1]
+        fpr, tpr, _ = metrics.roc_curve(y_test, y_pred)
+        aucs.append(metrics.auc(fpr,tpr))
 
-	user_model.auc = sum(aucs)/len(aucs)
+    user_model.auc = sum(aucs)/len(aucs)
 
-	features = category_model.predict_proba(X)
-	user_model.fit(features, y)
+    features = category_model.predict_proba(X)
+    user_model.fit(features, y)
 
-	print(metrics.classification_report(y, user_model.predict(features))) 
+    print(metrics.classification_report(y, user_model.predict(features))) 
 
-	with open(BASEDIR + "user_models/" + username + ".pickle", 'wb') as f:
-		pickle.dump(user_model, f)	
+    with open(BASEDIR + "user_models/" + username + ".pickle", 'wb') as f:
+        pickle.dump(user_model, f)  
 
-	print "Model written out to " + BASEDIR + "user_models/" + username + ".pickle"	
+    print "Model written out to " + BASEDIR + "user_models/" + username + ".pickle" 
 
-	return user_model 
+    return user_model    
+
+def pull_today_questions(season, day):
+    br = mechanize.Browser()
+    cj = cookielib.LWPCookieJar()
+    br.set_cookiejar(cj)
+    br.set_handle_equiv(True)
+    br.set_handle_gzip(True)
+    br.set_handle_redirect(True)
+    br.set_handle_referer(True)
+    br.set_handle_robots(False)
+    br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+
+    br.addheaders = [('User-agent', 'Chrome')]
+    br.open('https://learnedleague.com/ucp.php?mode=login')
+
+
+    br.select_form(nr=0)
+    br['username'] = LL_USERNAME
+    br['password'] = LL_PASSWORD
+    br.submit() 
+
+    question_array = []
+
+    r = br.open('https://learnedleague.com/match.php?' + str(season) + '&' + str(day)).read()
+
+    soup = BeautifulSoup(r)
+
+    for i in range(1,7):
+        span = soup.find(id="q_field"+str(i))
+        question_text = ' '.join(span.text.split())
+        question_array.append(question_text)
+
+    return question_array   
 
 def score_questions(username, q1, q2, q3, q4, q5, q6):
 
@@ -426,30 +459,89 @@ def score_questions(username, q1, q2, q3, q4, q5, q6):
     
     features = category_model.predict_proba([q1, q2, q3, q4, q5, q6])
 
-    return (user_model.predict_proba(features)[:,1], user_model.auc)    
-       
+    return (user_model.predict_proba(features)[:,1], user_model.auc)
+
+def send_email(questions, assigned_points, ranks):
+    server = smtplib.SMTP("smtp.gmail.com:587")
+    server.starttls()
+    server.login(GMAIL_USERNAME,GMAIL_PASSWORD)
+    
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = "LL73 MD13"
+    msg['From'] = GMAIL_USERNAME
+    msg['To'] = GMAIL_USERNAME
+
+    html = """\
+    <html>
+      <head></head>
+      <body>
+        <table>
+            <tr><td>Question</td><td>Points</td><td>Rank</td></tr>"""
+    
+    for i in range(0, len(questions)):
+        html += "<tr><td>" + questions[i] + "</td><td>" + str(assigned_points[i]) + "</td><td>" + str(ranks[i]) + "</td></tr>"
+            
+    html += """</table>
+      </body>
+    </html>
+    """    
+    
+    html = html.encode("utf-8")
+
+    part1 = MIMEText(html, 'html')
+    msg.attach(part1)
+    
+    server.sendmail(GMAIL_USERNAME, GMAIL_USERNAME, msg.as_string())
+    server.quit()       
 
 if __name__ == "__main__":
+
+    matches = {
+        "09/08/2017": 10,
+        "09/11/2017": 11,
+        "09/12/2017": 12,
+        "09/13/2017": 13,
+        "09/14/2017": 14,
+        "09/15/2017": 15,
+        "09/18/2017": 16,
+        "09/19/2017": 17,
+        "09/20/2017": 18,
+        "09/21/2017": 19,
+        "09/22/2017": 20,
+        "09/25/2017": 21,
+        "09/26/2017": 22,
+        "09/27/2017": 23,
+        "09/28/2017": 24,
+        "09/29/2017": 25,
+    }    
 
     # read username and password for the learned league site
     config = ConfigParser.ConfigParser()
     config.read("settings.ini")
     LL_USERNAME = config.get("LearnedLeague","username")
-    LL_PASSWORD = config.get("LearnedLeague","password")
+    LL_PASSWORD = config.get("LearnedLeague","password")   
+    GMAIL_USERNAME = config.get("Gmail","username")
+    GMAIL_PASSWORD = config.get("Gmail","password") 
 
-    # build category model (assumes question_file is up-to-date)
-    # question_file = BASEDIR + "question_details.csv"
-    # X, y = pull_questions(question_file)
-    # classifier = SGDClassifier(loss = "log")    
-    # model = build_model(X, y, classifier)
-    # with open(BASEDIR + "categories.pickle", 'wb') as f:
-    #     pickle.dump(model, f)   
-    # print("Model written out to {}".format("categories.pickle"))
-    # print(show_most_informative_features(model))    
+    csvfile = BASEDIR + "question_details.csv"
 
-    # build user models
+    date = time.strftime("%m/%d/%Y")
+    if date in matches:
+        matchday = matches[date]
+        questions = pull_matchday_questions(74, matchday)
+        with open(csvfile, "a") as f:
+            writer = csv.writer(f)
+            for i in range(0, len(questions)):
+                writer.writerow([questions[i][0].strip(), questions[i][1].strip(), questions[i][2].strip(), questions[i][3].encode("utf-8").strip(), questions[i][4].strip()])                          
 
-    # need to first download the question text for new questions and put them into the "master" question file
+    # Step 2: build category model
+    X, y = pull_questions(csvfile)
+    classifier = SGDClassifier(loss = "log")
+    model = build_model(X, y, classifier)
+    with open(BASEDIR + "categories.pickle", 'wb') as f:
+        pickle.dump(model, f)   
+    print("Model written out to {}".format("categories.pickle"))
+    # print(show_most_informative_features(model))
 
     if len(sys.argv) > 1:
         username = sys.argv[1]
@@ -465,4 +557,4 @@ if __name__ == "__main__":
 
             X, y = pull_user_questions(user_question_file)
 
-            user_model = build_and_evaluate_user_model(X, y)
+            user_model = build_and_evaluate_user_model(X, y)    
