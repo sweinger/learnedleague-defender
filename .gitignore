@@ -3,3 +3,4 @@ settings.ini
 categories.pickle
 user_data/
 user_models/
+*~
