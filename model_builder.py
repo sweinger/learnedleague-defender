@@ -46,11 +46,6 @@ import webapp2
 
 BASEDIR = os.path.expanduser("~") + "/git/learnedleague-defender/"
 
-LL_USERNAME = None
-LL_PASSWORD = None   
-GMAIL_USERNAME = None
-GMAIL_PASSWORD = None
-
 def get_user_list():
     return [
         'allardm',
@@ -436,6 +431,11 @@ def build_and_evaluate_user_model(X, y):
 
     print(metrics.classification_report(y, user_model.predict(features))) 
 
+    with open(BASEDIR + "user_models/" + username + ".pickle", 'wb') as f:
+        pickle.dump(user_model, f)  
+
+    print "Model written out to " + BASEDIR + "user_models/" + username + ".pickle" 
+
     return user_model    
 
 def pull_today_questions(season, day):
@@ -523,7 +523,6 @@ def build_models():
     # read username and password for the learned league site
     config = ConfigParser.ConfigParser()
     config.read("settings.ini")
-    global LL_USERNAME, LL_PASSWORD, GMAIL_USERNAME, GMAIL_PASSWORD
     LL_USERNAME = config.get("LearnedLeague","username")
     LL_PASSWORD = config.get("LearnedLeague","password")   
     GMAIL_USERNAME = config.get("Gmail","username")
@@ -554,21 +553,16 @@ def build_models():
         user_question_file = download_question_history(username)
         X, y = pull_user_questions(user_question_file)
         user_model = build_and_evaluate_user_model(X, y)
-        with open(BASEDIR + "user_models/" + username + ".pickle", 'wb') as f:
-            pickle.dump(user_model, f)  
-
-        print "Model written out to " + BASEDIR + "user_models/" + username + ".pickle"         
 
     else:
 
         for username in get_user_list():
-            user_question_file = download_question_history(username)
-            X, y = pull_user_questions(user_question_file)
-            user_model = build_and_evaluate_user_model(X, y) 
-            with open(BASEDIR + "user_models/" + username + ".pickle", 'wb') as f:
-                pickle.dump(user_model, f)  
 
-            print "Model written out to " + BASEDIR + "user_models/" + username + ".pickle" 
+            user_question_file = download_question_history(username)
+
+            X, y = pull_user_questions(user_question_file)
+
+            user_model = build_and_evaluate_user_model(X, y)  
 
 class BuildModels(webapp2.RequestHandler):
     def get(self):
