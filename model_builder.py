@@ -406,7 +406,6 @@ def pull_user_questions(csvfile):
     y = df['correct'].values
     return (X, y)
 
-@timeit
 def build_and_evaluate_user_model(X, y):
 
     with open("categories.pickle", 'rb') as f:
@@ -416,25 +415,28 @@ def build_and_evaluate_user_model(X, y):
 
     aucs = []
 
+    @timeit
+    def build(X, y):
+        features = category_model.predict_proba(X)
+        model = LogisticRegression()
+        model.fit(features, y)
+        return model
+
     for train, test in kf.split(X):
 
         X_train, X_test, y_train, y_test = X[train], X[test], y[train], y[test]
 
-        features = category_model.predict_proba(X_train)
-
-        user_model = LogisticRegression()
-        user_model.fit(features, y_train)   
+        user_model, secs = build(X_train, y_train)
         
         y_pred = user_model.predict_proba(category_model.predict_proba(X_test))[:,1]
         fpr, tpr, _ = metrics.roc_curve(y_test, y_pred)
         aucs.append(metrics.auc(fpr,tpr))
 
+    user_model, secs = build(X, y)
+
     user_model.auc = sum(aucs)/len(aucs)
 
-    features = category_model.predict_proba(X)
-    user_model.fit(features, y)
-
-    print(metrics.classification_report(y, user_model.predict(features))) 
+    print(metrics.classification_report(y, user_model.predict(category_model.predict_proba(X)))) 
 
     return user_model    
 
@@ -531,14 +533,14 @@ def build_models():
 
     csvfile = BASEDIR + "question_details.csv"
 
-    date = time.strftime("%m/%d/%Y")
-    if date in matches:
-        matchday = matches[date]
-        questions = pull_matchday_questions(74, matchday)
-        with open(csvfile, "a") as f:
-            writer = csv.writer(f)
-            for i in range(0, len(questions)):
-                writer.writerow([questions[i][0].strip(), questions[i][1].strip(), questions[i][2].strip(), questions[i][3].encode("utf-8").strip(), questions[i][4].strip()])                          
+    # date = time.strftime("%m/%d/%Y")
+    # if date in matches:
+    #     matchday = matches[date]
+    #     questions = pull_matchday_questions(74, matchday)
+    #     with open(csvfile, "a") as f:
+    #         writer = csv.writer(f)
+    #         for i in range(0, len(questions)):
+    #             writer.writerow([questions[i][0].strip(), questions[i][1].strip(), questions[i][2].strip(), questions[i][3].encode("utf-8").strip(), questions[i][4].strip()])                          
 
     # Step 2: build category model
     X, y = pull_questions(csvfile)
@@ -565,6 +567,7 @@ def build_models():
             user_question_file = download_question_history(username)
             X, y = pull_user_questions(user_question_file)
             user_model = build_and_evaluate_user_model(X, y) 
+            print type(user_model)
             with open(BASEDIR + "user_models/" + username + ".pickle", 'wb') as f:
                 pickle.dump(user_model, f)  
 
